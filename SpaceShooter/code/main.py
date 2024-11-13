@@ -24,6 +24,11 @@ class Player(pygame.sprite.Sprite):
         self.direction = self.direction.normalize() if self.direction else self.direction
         self.rect.center += self.direction * self.speed * dt
 
+class Star(pygame.sprite.Sprite):
+    def __init__(self, surface, *groups):
+        super().__init__(*groups)
+        self.image = surface
+        self.rect = self.image.get_frect(center = (random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT)))
 
 
 # pygame setup
@@ -36,6 +41,9 @@ clock = pygame.Clock()
 
 all_sprites = pygame.sprite.Group()
 
+for i in range(20):
+    Star(STAR_SURF, all_sprites)
+    
 player = Player(PLAYER_SURF, all_sprites)
 
 while running:
