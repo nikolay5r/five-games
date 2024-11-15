@@ -1,23 +1,19 @@
 # Example file showing a basic pygame "game loop"
 import pygame
 from os.path import join
-from pygame.math import Vector2
 import random
 
 IMAGES_PATH = join("assets", "images")
 AUDIO_PATH = join("assets", "audio")
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
-
-PLAYER_SURF = pygame.image.load(join(IMAGES_PATH, "player.png")).convert_alpha()
-STAR_SURF = pygame.image.load(join(IMAGES_PATH, "star.png")).convert_alpha()
-LASER_SURF = pygame.image.load(join(IMAGES_PATH, "laser.png")).convert_alpha()
+NUMBER_OF_STARS = 30
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, surface, *groups):
         super().__init__(*groups)
         self.image = surface
         self.rect = self.image.get_frect(center = (WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
-        self.direction = Vector2()
+        self.direction = pygame.math.Vector2()
         self.speed = 400
         self.can_shoot = True
         self.last_laser_shot_time = 0
@@ -67,17 +63,44 @@ class Laser(pygame.sprite.Sprite):
             self.kill()
 
 
+class Meteor(pygame.sprite.Sprite):
+    def __init__(self, surface, *groups):
+        super().__init__(*groups)
+        self.image = surface
+        image_width = self.image.size[0]
+        image_height = self.image.size[1]
+        self.rect = self.image.get_frect(center = (random.randint(0 + image_width, WINDOW_WIDTH - image_width), -image_height))
+        self.spawn_time = pygame.time.get_ticks()
+        self.direction = pygame.math.Vector2(0, 1)
+        self.speed = 400
+
+    def update(self, dt):
+        self.rect.center += self.direction * self.speed * dt
+
+        if self.rect.top > WINDOW_HEIGHT:
+            self.kill()
+
+
 # pygame setup
 pygame.init()
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Space Shooter")
 running = True
 
+PLAYER_SURF = pygame.image.load(join(IMAGES_PATH, "player.png")).convert_alpha()
+STAR_SURF = pygame.image.load(join(IMAGES_PATH, "star.png")).convert_alpha()
+LASER_SURF = pygame.image.load(join(IMAGES_PATH, "laser.png")).convert_alpha()
+METEOR_SURF = pygame.image.load(join(IMAGES_PATH, "meteor.png")).convert_alpha()
+
+METEOR_EVENT = pygame.event.custom_type()
+
+pygame.time.set_timer(METEOR_EVENT, 500)
+
 clock = pygame.Clock()
 
 all_sprites = pygame.sprite.Group()
 
-for i in range(20):
+for i in range(NUMBER_OF_STARS):
     Star(STAR_SURF, all_sprites)
     
 player = Player(PLAYER_SURF, all_sprites)
@@ -88,6 +111,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == METEOR_EVENT:
+            Meteor(METEOR_SURF, all_sprites)
 
     display_surface.fill("darkgray")
 
