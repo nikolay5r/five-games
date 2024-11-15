@@ -3,10 +3,9 @@ import pygame
 from os.path import join
 import random
 
-IMAGES_PATH = join("assets", "images")
-AUDIO_PATH = join("assets", "audio")
+IMAGES_PATH, AUDIO_PATH, FONTS_PATH = join("assets", "images"), join("assets", "audio"), join("assets", "fonts")
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
-NUMBER_OF_STARS = 30
+NUMBER_OF_STARS, FONT_SIZE, FONT_PADDING = 30, 40, 20
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, surface, *groups):
@@ -81,16 +80,32 @@ class Meteor(pygame.sprite.Sprite):
             self.kill()
 
 
+def collisions():
+    if pygame.sprite.spritecollide(player, meteor_sprites, True):
+        print("dead")
+
+    for laser in laser_sprites:
+        if pygame.sprite.spritecollide(laser, meteor_sprites, True):
+            laser.kill()
+
+def display_score():
+    current_time = pygame.time.get_ticks() // 100
+    text_surf = FONT.render(str(current_time), True, (240, 240, 240))
+    text_rect = text_surf.get_frect(midbottom = (WINDOW_WIDTH / 2, WINDOW_HEIGHT - FONT_PADDING))
+    display_surface.blit(text_surf, text_rect)
+
 # pygame setup
 pygame.init()
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Space Shooter")
 running = True
 
+#import
 PLAYER_SURF = pygame.image.load(join(IMAGES_PATH, "player.png")).convert_alpha()
 STAR_SURF = pygame.image.load(join(IMAGES_PATH, "star.png")).convert_alpha()
 LASER_SURF = pygame.image.load(join(IMAGES_PATH, "laser.png")).convert_alpha()
 METEOR_SURF = pygame.image.load(join(IMAGES_PATH, "meteor.png")).convert_alpha()
+FONT = pygame.font.Font(join(FONTS_PATH, "Oxanium-Bold.ttf"), 40)
 
 METEOR_EVENT = pygame.event.custom_type()
 
@@ -107,14 +122,6 @@ for i in range(NUMBER_OF_STARS):
     
 player = Player(PLAYER_SURF, all_sprites)
 
-def collisions():
-    if pygame.sprite.spritecollide(player, meteor_sprites, True):
-        print("dead")
-
-    for laser in laser_sprites:
-        if pygame.sprite.spritecollide(laser, meteor_sprites, True):
-            laser.kill()
-
 while running:
     dt = clock.tick() / 1000
 
@@ -126,10 +133,11 @@ while running:
 
     collisions()
 
-    display_surface.fill("darkgray")
-    all_sprites.update(dt)
+    display_surface.fill("#3a2e3f")
+    display_score()
     all_sprites.draw(display_surface)
 
+    all_sprites.update(dt)
     pygame.display.update()
 
 pygame.quit()
