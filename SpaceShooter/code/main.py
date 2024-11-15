@@ -5,13 +5,16 @@ import random
 
 IMAGES_PATH, AUDIO_PATH, FONTS_PATH = join("assets", "images"), join("assets", "audio"), join("assets", "fonts")
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
-NUMBER_OF_STARS, FONT_SIZE, FONT_PADDING = 30, 40, 20
+NUMBER_OF_STARS = 30
+FONT_SIZE, FONT_PADDING = 40, 20
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, surface, *groups):
         super().__init__(*groups)
         self.image = surface
         self.rect = self.image.get_frect(center = (WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
+        self.mask = pygame.mask.from_surface(self.image)
+
         self.direction = pygame.math.Vector2()
         self.speed = 400
         self.can_shoot = True
@@ -52,6 +55,7 @@ class Laser(pygame.sprite.Sprite):
         super().__init__(*groups)
         self.image = surface
         self.rect = self.image.get_frect(center = pos)
+        self.mask = pygame.mask.from_surface(self.image)
         self.direction = pygame.math.Vector2(0, -1)
         self.speed = 400
 
@@ -65,27 +69,57 @@ class Laser(pygame.sprite.Sprite):
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, surface, *groups):
         super().__init__(*groups)
+        self.original_surface = surface
         self.image = surface
         image_width = self.image.size[0]
         image_height = self.image.size[1]
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_frect(center = (random.randint(0 + image_width, WINDOW_WIDTH - image_width), -image_height))
-        self.spawn_time = pygame.time.get_ticks()
+        self.mask = pygame.mask.from_surface(self.image)
+
         self.direction = pygame.math.Vector2(random.uniform(-0.5, 0.5), 1)
         self.speed = random.randint(400, 500)
+        self.rotation = 0
+        self.rotation_speed = random.randint(50, 100)
 
     def update(self, dt):
-        self.rect.center += self.direction * self.speed * dt
-
         if self.rect.top > WINDOW_HEIGHT:
             self.kill()
 
+        self.rect.center += self.direction * self.speed * dt
+
+        self.rotation += self.rotation_speed * dt
+        self.image = pygame.transform.rotozoom(self.original_surface, self.rotation, 1)
+        self.rect = self.image.get_frect(center = self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
+
+
+class Animation(pygame.sprite.Sprite):
+    def __init__(self, frames, pos, *groups):
+        super().__init__(*groups)
+        self.frame_index = 0
+        self.frames = frames
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_frect(center = pos)
+        self.animation_speed = 25
+
+    def update(self, dt):
+        self.frame_index += self.animation_speed * dt
+        if self.frame_index < len(self.frames):
+            self.image = self.frames[int(self.frame_index)]
+        else:
+            self.kill()
+            
+
 
 def collisions():
-    if pygame.sprite.spritecollide(player, meteor_sprites, True):
+    if pygame.sprite.spritecollide(player, meteor_sprites, True, pygame.sprite.collide_mask):
         print("dead")
 
     for laser in laser_sprites:
-        if pygame.sprite.spritecollide(laser, meteor_sprites, True):
+        collision_sprites = pygame.sprite.spritecollide(laser, meteor_sprites, True, pygame.sprite.collide_mask)
+        if collision_sprites:
+            Animation(EXPLOSION_FRAMES, laser.rect.midtop, all_sprites)
             laser.kill()
 
 def display_score():
@@ -93,6 +127,7 @@ def display_score():
     text_surf = FONT.render(str(current_time), True, (240, 240, 240))
     text_rect = text_surf.get_frect(midbottom = (WINDOW_WIDTH / 2, WINDOW_HEIGHT - FONT_PADDING))
     display_surface.blit(text_surf, text_rect)
+    pygame.draw.rect(display_surface, (240, 240, 240), text_rect.inflate(20, 10).move(0, -5), 5, 10)
 
 # pygame setup
 pygame.init()
@@ -106,6 +141,7 @@ STAR_SURF = pygame.image.load(join(IMAGES_PATH, "star.png")).convert_alpha()
 LASER_SURF = pygame.image.load(join(IMAGES_PATH, "laser.png")).convert_alpha()
 METEOR_SURF = pygame.image.load(join(IMAGES_PATH, "meteor.png")).convert_alpha()
 FONT = pygame.font.Font(join(FONTS_PATH, "Oxanium-Bold.ttf"), 40)
+EXPLOSION_FRAMES = tuple(pygame.image.load(join(IMAGES_PATH, "explosion", f"{i}.png")) for i in range(21))
 
 METEOR_EVENT = pygame.event.custom_type()
 
