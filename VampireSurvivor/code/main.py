@@ -11,6 +11,7 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.clock = pygame.time.Clock()
         self.running = True
+        self.player = Player(surfaces.PLAYER_SURFACE_FRAMES, (self.all_sprites, ), (self.collision_sprites, ))
     
     def run(self):
         while self.running:
