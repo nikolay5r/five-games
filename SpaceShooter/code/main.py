@@ -37,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         just_pressed_keys = pygame.key.get_just_pressed()
         if just_pressed_keys[pygame.K_SPACE] and self.can_shoot:
             Laser(LASER_SURF, self.rect.center, all_sprites, laser_sprites)
+            LASER_SOUND.play()
             self.can_shoot = False
             self.last_laser_shot_time = pygame.time.get_ticks()
         
@@ -111,15 +112,16 @@ class Animation(pygame.sprite.Sprite):
             self.kill()
             
 
-
 def collisions():
     if pygame.sprite.spritecollide(player, meteor_sprites, True, pygame.sprite.collide_mask):
+        DAMAGE_SOUND.play()
         print("dead")
 
     for laser in laser_sprites:
         collision_sprites = pygame.sprite.spritecollide(laser, meteor_sprites, True, pygame.sprite.collide_mask)
         if collision_sprites:
             Animation(EXPLOSION_FRAMES, laser.rect.midtop, all_sprites)
+            EXPLOSION_SOUND.play()
             laser.kill()
 
 def display_score():
@@ -140,8 +142,15 @@ PLAYER_SURF = pygame.image.load(join(IMAGES_PATH, "player.png")).convert_alpha()
 STAR_SURF = pygame.image.load(join(IMAGES_PATH, "star.png")).convert_alpha()
 LASER_SURF = pygame.image.load(join(IMAGES_PATH, "laser.png")).convert_alpha()
 METEOR_SURF = pygame.image.load(join(IMAGES_PATH, "meteor.png")).convert_alpha()
-FONT = pygame.font.Font(join(FONTS_PATH, "Oxanium-Bold.ttf"), 40)
 EXPLOSION_FRAMES = tuple(pygame.image.load(join(IMAGES_PATH, "explosion", f"{i}.png")) for i in range(21))
+
+FONT = pygame.font.Font(join(FONTS_PATH, "Oxanium-Bold.ttf"), 40)
+
+EXPLOSION_SOUND = pygame.mixer.Sound(join(AUDIO_PATH, "explosion.wav"))
+LASER_SOUND = pygame.mixer.Sound(join(AUDIO_PATH, "laser.wav"))
+DAMAGE_SOUND = pygame.mixer.Sound(join(AUDIO_PATH, "damage.ogg"))
+GAME_MUSIC = pygame.mixer.Sound(join(AUDIO_PATH, "game_music.wav"))
+GAME_MUSIC.play(-1)
 
 METEOR_EVENT = pygame.event.custom_type()
 
