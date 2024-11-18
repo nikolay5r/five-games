@@ -9,3 +9,4 @@ TILE_SIZE = 64
 PLAYER_PATH = join("images", "player")
 ENEMIES_PATH = join("images", "enemies")
 GUN_PATH = join("images", "gun")
+MAPS_PATH = join("data", "maps")
