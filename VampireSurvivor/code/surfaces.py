@@ -6,3 +6,6 @@ PLAYER_SURFACE_FRAMES = {
     "left": tuple(pygame.image.load(join(PLAYER_PATH, "left", f"{i}.png")) for i in range(4)),
     "right": tuple(pygame.image.load(join(PLAYER_PATH, "right", f"{i}.png")) for i in range(4))
 }
+
+BULLET_SURFACE = pygame.image.load(join(GUN_PATH, "bullet.png"))
+GUN_SURFACE = pygame.image.load(join(GUN_PATH, "gun.png"))
