@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.frames[self.animation_state][self.frame_index]
         self.rect = self.image.get_frect(center = pos)
-        self.hitbox_rect = self.rect.inflate(-60, -5)
+        self.hitbox_rect = self.rect.inflate(-90, -90)
 
         self.direction = pygame.math.Vector2()
         self.speed = 400
@@ -59,7 +59,6 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.frames[self.animation_state][int(self.frame_index) % len(self.frames[self.animation_state])]
         self.rect = self.image.get_frect(center = self.rect.center)
-        self.hitbox_rect = self.rect.inflate(-60, -5)
 
     def update(self, dt):
         self.frame_index += self.animation_speed * dt
