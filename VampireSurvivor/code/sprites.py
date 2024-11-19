@@ -7,6 +7,7 @@ class TileSprite(pygame.sprite.Sprite):
         pos *= TILE_SIZE
         self.image = surface
         self.rect = self.image.get_frect(topleft = pos)
+        self.ground = True
 
 class CollisionSprite(pygame.sprite.Sprite):
     def __init__(self, pos, surface, groups):
