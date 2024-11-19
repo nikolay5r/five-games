@@ -13,7 +13,8 @@ class Bullet(pygame.sprite.Sprite):
         self.lifetime = 1000
         self.spawn_time = pygame.time.get_ticks()
 
-        self.rotation_speed = 20
+        self.rotation = 0
+        self.rotation_speed = 500
     
     def __despawn_timer(self):
         current_time = pygame.time.get_ticks()
@@ -22,12 +23,13 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
     def __rotate(self, dt):
-        self.image = pygame.transform.rotate(self.surf, self.rotation_speed * dt)
+        self.rotation += self.rotation_speed * dt
+        self.image = pygame.transform.rotozoom(self.surf, self.rotation, 1)
         self.rect = self.image.get_frect(center = self.rect.center)
 
     def update(self, dt):
         self.__despawn_timer()
         
-        # self.__rotate(dt)
+        self.__rotate(dt)
         self.rect.center += self.direction * self.speed * dt
 
