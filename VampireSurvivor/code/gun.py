@@ -58,4 +58,3 @@ class Gun(pygame.sprite.Sprite):
 
         self.__fire_timer()
         self.__fire_bullet()
-        print(self.can_fire_bullet)
