@@ -46,6 +46,8 @@ class Gun(pygame.sprite.Sprite):
         just_pressed_keys = pygame.mouse.get_just_pressed()
 
         if just_pressed_keys[0] and self.can_fire_bullet:
+            self.can_fire_bullet = False
+            self.last_fire_time = pygame.time.get_ticks()
             Bullet(surfaces.BULLET_SURFACE, self.rect.center, self.direction, self.bullet_groups)
         
 
@@ -56,3 +58,4 @@ class Gun(pygame.sprite.Sprite):
 
         self.__fire_timer()
         self.__fire_bullet()
+        print(self.can_fire_bullet)
