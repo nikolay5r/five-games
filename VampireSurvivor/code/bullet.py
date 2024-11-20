@@ -5,7 +5,6 @@ class Bullet(pygame.sprite.Sprite):
         super().__init__(groups)
         self.surf = surface
         self.image = surface
-        print(pos)
         self.rect = self.image.get_frect(center = pos)
 
         self.direction = direction

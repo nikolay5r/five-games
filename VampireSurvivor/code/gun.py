@@ -48,7 +48,8 @@ class Gun(pygame.sprite.Sprite):
         if just_pressed_keys[0] and self.can_fire_bullet:
             self.can_fire_bullet = False
             self.last_fire_time = pygame.time.get_ticks()
-            Bullet(surfaces.BULLET_SURFACE, self.rect.center, self.direction, self.bullet_groups)
+            spawn_pos = self.rect.center + self.direction * 50
+            Bullet(surfaces.BULLET_SURFACE, spawn_pos, self.direction, self.bullet_groups)
         
 
     def update(self, _):
