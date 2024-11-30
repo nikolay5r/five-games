@@ -7,8 +7,8 @@ class Paddle(pygame.sprite.Sprite, ABC):
     def __init__(self, type: str, groups: tuple):
         super().__init__(groups)
 
-        self.image = pygame.Surface(settings.SIZE["paddle"])
-        self.image.fill(settings.COLORS["paddle"])
+        self.image = pygame.Surface(settings.SIZE["paddle"], pygame.SRCALPHA)
+        pygame.draw.rect(self.image, settings.COLORS["paddle"], pygame.FRect((0, 0), settings.SIZE["paddle"]), 0, 4)
         self.rect = self.image.get_frect(center = settings.POS[type])
 
         self.direction = 0
