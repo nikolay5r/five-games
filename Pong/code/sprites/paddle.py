@@ -10,6 +10,7 @@ class Paddle(pygame.sprite.Sprite, ABC):
         self.image = pygame.Surface(settings.SIZE["paddle"], pygame.SRCALPHA)
         pygame.draw.rect(self.image, settings.COLORS["paddle"], pygame.FRect((0, 0), settings.SIZE["paddle"]), 0, 4)
         self.rect = self.image.get_frect(center = settings.POS[type])
+        self.old_rect = self.rect.copy()
 
         self.direction = 0
         self.speed = settings.SPEED[type]
@@ -24,6 +25,7 @@ class Paddle(pygame.sprite.Sprite, ABC):
         self.__screen_collisions()
 
     def move(self, dt):
+        self.old_rect = self.rect.copy()
         self.rect.centery += self.speed * self.direction * dt
     
     @abstractmethod
