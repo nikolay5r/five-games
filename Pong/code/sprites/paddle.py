@@ -14,3 +14,22 @@ class Paddle(pygame.sprite.Sprite, ABC):
         self.direction = 0
         self.speed = settings.SPEED[type]
 
+    def __screen_collisions(self):
+        if self.rect.top < 0:
+            self.rect.top = 0
+        elif self.rect.bottom > settings.WINDOW_HEIGHT:
+            self.rect.bottom = settings.WINDOW_HEIGHT
+
+    def collisions(self):
+        self.__screen_collisions()
+
+    def move(self, dt):
+        self.rect.centery += self.speed * self.direction * dt
+    
+    @abstractmethod
+    def get_direction(self):
+        pass
+
+    @abstractmethod
+    def update(self, dt):
+        pass
