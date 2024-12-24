@@ -20,17 +20,17 @@ class Ball(pygame.sprite.Sprite):
         for sprite in self.paddle_sprites:
             if sprite.rect.colliderect(self.rect):
                 if direction == "horizontal":
-                    if self.rect.right > sprite.rect.left and self.old_rect.right < sprite.old_rect.left:
+                    if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
                         self.rect.right = sprite.rect.left
                         self.direction[0] *= -1
-                    if self.rect.left < sprite.rect.right and self.old_rect.left > sprite.old_rect.right:
+                    if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
                         self.rect.left = sprite.rect.right
                         self.direction[0] *= -1
                 elif direction == "vertical":
-                    if self.rect.bottom > sprite.rect.top and self.old_rect.bottom < sprite.old_rect.top:
+                    if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
                         self.rect.bottom = sprite.rect.top
                         self.direction[1] *= -1
-                    if self.rect.top < sprite.rect.bottom and self.old_rect.top > sprite.old_rect.bottom:
+                    if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
                         self.rect.top = sprite.rect.bottom
                         self.direction[1] *= -1
 
@@ -50,13 +50,13 @@ class Ball(pygame.sprite.Sprite):
             self.direction[0] *= -1
 
     def move(self, dt):
-        self.old_rect = self.rect.copy()
-
-        self.rect.center += self.direction * self.speed * dt
+        self.rect.centerx += self.direction.x * self.speed * dt
         self.__paddle_collisions("horizontal")
+        self.rect.centery += self.direction.y * self.speed * dt
         self.__paddle_collisions("vertical")
 
     def update(self, dt):
+        self.old_rect = self.rect.copy()
         self.move(dt)
         self.__screen_collisions()
 
