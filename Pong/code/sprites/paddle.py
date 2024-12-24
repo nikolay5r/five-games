@@ -48,10 +48,10 @@ class Player(Paddle):
 
 
 class Opponent(Paddle):
-    def __init__(self, groups: tuple):
+    def __init__(self, groups: tuple, ball):
         super().__init__("opponent", groups)
+        self.ball = ball
     
     def get_direction(self):
-        keys = pygame.key.get_pressed()
-        self.direction = int(keys[pygame.K_DOWN] or keys[pygame.K_s]) - int(keys[pygame.K_UP] or keys[pygame.K_w])
+       self.direction = 1 if self.ball.rect.centery > self.rect.centery else -1
 
