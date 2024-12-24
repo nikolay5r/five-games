@@ -4,17 +4,16 @@ import settings
 from random import choice, uniform
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, groups: tuple, paddle_sprites: pygame.sprite.Group) -> None:
+    def __init__(self, groups: tuple, paddle_sprites: pygame.sprite.Group, update_score) -> None:
         super().__init__(groups)
         self.image = pygame.Surface(settings.SIZE["ball"], pygame.SRCALPHA)
         pygame.draw.circle(self.image, settings.COLORS["ball"], (settings.SIZE["ball"][0] / 2, settings.SIZE["ball"][1] / 2), settings.SIZE["ball"][0] / 2)
-        
-        self.rect = self.image.get_frect(center = (settings.WINDOW_HEIGHT / 2, settings.WINDOW_WIDTH / 2))
-        self.old_rect = self.rect.copy()
-        self.direction = pygame.math.Vector2(choice((-1, 1)), uniform(0.7, 0.8) * choice((-1, 1)))
+        self.__reset()
         self.speed = settings.SPEED["ball"]
 
         self.paddle_sprites = paddle_sprites
+
+        self.update_score = update_score
 
     def __paddle_collisions(self, direction):
         for sprite in self.paddle_sprites:
@@ -42,12 +41,19 @@ class Ball(pygame.sprite.Sprite):
             self.rect.bottom = settings.WINDOW_HEIGHT
             self.direction[1] *= -1
 
-        if self.rect.left < 0:
-            self.rect.left = 0
-            self.direction[0] *= -1  
-        elif self.rect.right > settings.WINDOW_WIDTH:
-            self.rect.right = settings.WINDOW_WIDTH
-            self.direction[0] *= -1
+        if self.rect.left <= 0:
+            self.update_score("player")
+            self.__reset()
+    
+        if self.rect.right >= settings.WINDOW_WIDTH:
+            self.update_score("opponent")
+            self.__reset()
+    
+    def __reset(self):
+        self.rect = self.image.get_frect(center = (settings.WINDOW_HEIGHT / 2, settings.WINDOW_WIDTH / 2))
+        self.old_rect = self.rect.copy()
+        self.direction = pygame.math.Vector2(choice((-1, 1)), uniform(0.7, 0.8) * choice((-1, 1)))
+        
 
     def move(self, dt):
         self.rect.centerx += self.direction.x * self.speed * dt
