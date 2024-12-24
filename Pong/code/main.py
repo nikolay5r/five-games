@@ -1,7 +1,7 @@
 import pygame
 import settings
 
-from sprites.player import Player
+from sprites.paddle import Player
 from sprites.ball import Ball
  
 class Game:
