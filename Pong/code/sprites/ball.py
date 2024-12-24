@@ -41,16 +41,12 @@ class Ball(pygame.sprite.Sprite):
             self.rect.bottom = settings.WINDOW_HEIGHT
             self.direction[1] *= -1
 
-        if self.rect.left <= 0:
-            self.update_score("player")
-            self.__reset()
-    
-        if self.rect.right >= settings.WINDOW_WIDTH:
-            self.update_score("opponent")
+        if self.rect.left <= 0 or self.rect.right >= settings.WINDOW_WIDTH:
+            self.update_score("player" if self.rect.centerx < settings.WINDOW_WIDTH / 2 else "opponent")
             self.__reset()
     
     def __reset(self):
-        self.rect = self.image.get_frect(center = (settings.WINDOW_HEIGHT / 2, settings.WINDOW_WIDTH / 2))
+        self.rect = self.image.get_frect(center = (settings.WINDOW_WIDTH / 2, settings.WINDOW_HEIGHT / 2))
         self.old_rect = self.rect.copy()
         self.direction = pygame.math.Vector2(choice((-1, 1)), uniform(0.7, 0.8) * choice((-1, 1)))
         
