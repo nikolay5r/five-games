@@ -25,13 +25,14 @@ class Paddle(pygame.sprite.Sprite, ABC):
         self.__screen_collisions()
 
     def move(self, dt):
-        self.old_rect = self.rect.copy()
         self.rect.centery += self.speed * self.direction * dt
     
     @abstractmethod
     def get_direction(self):
         pass
 
-    @abstractmethod
     def update(self, dt):
-        pass
+        self.old_rect = self.rect.copy()
+        self.move(dt)
+        self.get_direction()
+        self.collisions()
