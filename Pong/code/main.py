@@ -1,6 +1,8 @@
 import pygame
 import settings
+import json
 
+from os.path import join
 from sprites.paddle import Player, Opponent
 from sprites.ball import Ball
  
@@ -23,7 +25,11 @@ class Game:
         self.opponent = Opponent((self.all_sprites, self.paddle_sprites), self.ball)
 
         #score
-        self.score = {"player": 0, "opponent": 0}
+        try:
+            with open(join("data", "score.json")) as score_file:
+                self.score = json.load(score_file)
+        except:
+            self.score = {"player": 0, "opponent": 0}
         self.font = pygame.font.Font(None, 160)
 
     def __display_score(self):
@@ -49,6 +55,8 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                    with open(join("data", "score.json"), "w") as score_file:
+                        json.dump(self.score, score_file)
             
             self.display_surface.fill(settings.COLORS["bg"])
 
