@@ -10,10 +10,18 @@ class Ball(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, settings.COLORS["ball"], (settings.SIZE["ball"][0] / 2, settings.SIZE["ball"][1] / 2), settings.SIZE["ball"][0] / 2)
         self.__reset()
         self.speed = settings.SPEED["ball"]
-
         self.paddle_sprites = paddle_sprites
-
+        self.delay = 1200
+        
         self.update_score = update_score
+
+    #delay the beginning of the movement
+    def __delay_timer(self):
+        if self.speed_modifier == 1:
+            pass
+        curr_time = pygame.time.get_ticks()
+        if curr_time - self.start_time >= self.delay:
+            self.speed_modifier = 1
 
     def __paddle_collisions(self, direction):
         for sprite in self.paddle_sprites:
@@ -49,16 +57,19 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(center = (settings.WINDOW_WIDTH / 2, settings.WINDOW_HEIGHT / 2))
         self.old_rect = self.rect.copy()
         self.direction = pygame.math.Vector2(choice((-1, 1)), uniform(0.7, 0.8) * choice((-1, 1)))
+        self.speed_modifier = 0
+        self.start_time = pygame.time.get_ticks()
         
 
     def move(self, dt):
-        self.rect.centerx += self.direction.x * self.speed * dt
+        self.rect.centerx += self.direction.x * self.speed * dt * self.speed_modifier
         self.__paddle_collisions("horizontal")
-        self.rect.centery += self.direction.y * self.speed * dt
+        self.rect.centery += self.direction.y * self.speed * dt * self.speed_modifier
         self.__paddle_collisions("vertical")
 
     def update(self, dt):
         self.old_rect = self.rect.copy()
+        self.__delay_timer()
         self.move(dt)
         self.__screen_collisions()
 
