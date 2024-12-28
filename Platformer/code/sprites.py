@@ -1,4 +1,5 @@
 from settings import *
+from timers import Timer
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
@@ -54,6 +55,9 @@ class Player(AnimatedSprite):
         self.jump_velocity = 20
         self.can_jump = True
 
+        # shooting
+        self.shoot_timer = Timer(500)
+
     def collision(self, direction):
         for sprite in self.collision_sprites:
             if sprite.rect.colliderect(self.rect):
@@ -95,9 +99,10 @@ class Player(AnimatedSprite):
         self.rect.centery += self.direction.y
         self.collision("vertical")
 
-    def get_direction(self):
+    def input(self):
         keys = pygame.key.get_pressed()
-        
+        mouse_keys = pygame.mouse.get_pressed()
+
         self.direction.x = int(keys[pygame.K_d] or keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT] or keys[pygame.K_a])
 
         # jump input
@@ -105,9 +110,14 @@ class Player(AnimatedSprite):
             self.direction.y = -self.jump_velocity  
             self.can_jump = False 
 
+        if not self.shoot_timer and (keys[pygame.K_RETURN] or mouse_keys[0]):
+            print("shoot")
+            self.shoot_timer.activate()
+
     def update(self, dt):
         self.last_direction = self.direction
 
-        self.get_direction()
+        self.shoot_timer.update()
+        self.input()
         self.move(dt)
         self.animate(dt)
