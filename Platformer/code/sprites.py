@@ -56,8 +56,9 @@ class Player(pygame.sprite.Sprite):
         self.direction.x = int(keys[pygame.K_d] or keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT] or keys[pygame.K_a])
 
         # jump input
-        if keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_SPACE]:
-            self.direction.y = -self.jump_velocity   
+        if self.can_jump and (keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_SPACE]):
+            self.direction.y = -self.jump_velocity  
+            self.can_jump = False 
 
     def setup_frames(self):
         for root, _, files in walk(join("images", "player")):
