@@ -17,15 +17,19 @@ class Game:
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
         
-        self.import_surfaces()
+        self.import_assets()
         self.setup_map()
 
-    def import_surfaces(self):
+    def import_assets(self):
+        # import surfaces and frames
         self.player_frames = import_folder("images", "player")
         self.bee_frames = import_folder("images", "enemies", "bee")
         self.worm_frames = import_folder("images", "enemies", "worm")
         self.bullet_surf = import_image("images", "gun", "bullet")
         self.fire_surf = import_image("images", "gun", "fire")
+
+        # import audio
+        self.audio = import_audio("audio")
 
     def setup_map(self):
         tmx_map = load_pygame(join("data", "maps", "world.tmx"))
