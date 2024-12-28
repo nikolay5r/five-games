@@ -17,6 +17,13 @@ class AnimatedSprite(Sprite):
         self.frame_index += self.animation_speed * dt
         self.image = self.frames[int(self.frame_index) % len(self.frames)]
 
+class Bee(AnimatedSprite):
+    def __init__(self, pos, frames, groups):
+        super().__init__(pos, frames, groups)
+
+    def update(self, dt):
+        self.animate(dt)
+
 class Player(AnimatedSprite):
     def __init__(self, pos, frames, groups, collision_sprites):
         super().__init__(pos, frames, groups)
@@ -38,7 +45,6 @@ class Player(AnimatedSprite):
         self.gravity = 50
         self.jump_velocity = 20
         self.can_jump = True
-
 
     def collision(self, direction):
         for sprite in self.collision_sprites:
