@@ -12,7 +12,7 @@ def import_folder(*path):
             frames.append(pygame.image.load(full_path).convert_alpha())
     return frames
 
-def import_audio(*path):
+def import_audio(*path) -> dict[str, pygame.mixer.Sound]:
     audio_dict = {}
     for root, _, files in walk(join("images", "player")):
         for file in files:
