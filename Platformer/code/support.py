@@ -11,3 +11,12 @@ def import_folder(*path):
             full_path = join(root, file)
             frames.append(pygame.image.load(full_path).convert_alpha())
     return frames
+
+def import_audio(*path):
+    audio_dict = {}
+    for root, _, files in walk(join("images", "player")):
+        for file in files:
+            full_path = join(root, file)
+            audio_dict[file.split('.')[0]] = pygame.mixer.Sound(full_path)
+    
+    return audio_dict
