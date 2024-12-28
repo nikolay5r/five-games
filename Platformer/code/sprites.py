@@ -24,6 +24,14 @@ class Bee(AnimatedSprite):
     def update(self, dt):
         self.animate(dt)
 
+class Worm(AnimatedSprite):
+    def __init__(self, pos, frames, groups):
+        super().__init__(pos, frames, groups)
+
+    def update(self, dt):
+        self.animate(dt)
+
+
 class Player(AnimatedSprite):
     def __init__(self, pos, frames, groups, collision_sprites):
         super().__init__(pos, frames, groups)
