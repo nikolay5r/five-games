@@ -6,17 +6,26 @@ class Sprite(pygame.sprite.Sprite):
         self.image = surf 
         self.rect = self.image.get_frect(center = pos)
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, groups, collision_sprites):
-        super().__init__(groups)
-
-        # animation
+class AnimatedSprite(Sprite):
+    def __init__(self, pos, frames, groups):
         self.animation_speed = 7
         self.frame_index = 0
+        self.frames = frames
+        super().__init__(pos, self.frames[self.frame_index], groups)
+
+    def animate(self, dt):
+        self.frame_index += self.animation_speed * dt
+        self.image = self.frames[int(self.frame_index) % len(self.frames)]
+
+class Player(AnimatedSprite):
+    def __init__(self, pos, frames, groups, collision_sprites):
+        self.setup_frames()
+        super().__init__(pos, self.frames, groups)
+
+        # animation
         self.jump_frame_index = 1
         self.is_facing_left = False
-        self.setup_frames()
-
+        
         self.image = self.frames[self.frame_index]        
         self.rect = self.image.get_frect(center = pos)
 
@@ -50,20 +59,16 @@ class Player(pygame.sprite.Sprite):
                         self.can_jump = True 
 
     def animate(self, dt):
-        if self.direction.x > 0:
-            self.is_facing_left = False
-        if self.direction.x < 0:
-            self.is_facing_left = True
-
-        if self.direction.y:
-            self.image = self.frames[self.jump_frame_index]
-            self.frame_index = self.jump_frame_index + 1
-        elif self.direction.x == 0:
+        if self.direction.x:
+            super().animate(dt)
+            self.is_facing_left = self.direction.x < 0
+        else:
             self.frame_index = 0
             self.image = self.frames[self.frame_index]
-        else:
-            self.frame_index += self.animation_speed * dt
-            self.image = self.frames[int(self.frame_index) % len(self.frames)]
+        
+        if not self.can_jump:
+            self.image = self.frames[self.jump_frame_index]
+            self.frame_index = self.jump_frame_index + 1
 
         self.image = pygame.transform.flip(self.image, self.is_facing_left, False)
 
