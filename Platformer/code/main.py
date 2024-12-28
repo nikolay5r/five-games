@@ -27,7 +27,7 @@ class Game:
 
         for obj in tmx_map.get_layer_by_name("Entities"):
             if obj.name == "Player":
-                Player((obj.x * TILE_SIZE, obj.y * TILE_SIZE), (self.all_sprites, self.collision_sprites))
+                Player((obj.x * TILE_SIZE, obj.y * TILE_SIZE), (self.all_sprites, self.collision_sprites), self.collision_sprites)
 
     def run(self):
         while self.running:
