@@ -9,6 +9,12 @@ class Sprite(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, groups, collision_sprites):
         super().__init__(groups)
+
+        # animation
+        self.animation_speed = 7
+        self.frame_index = 0
+        self.jump_frame_index = 1
+        self.is_facing_left = False
         self.setup_frames()
 
         self.image = self.frames[self.frame_index]        
@@ -19,6 +25,7 @@ class Player(pygame.sprite.Sprite):
 
         # movement
         self.direction = pygame.math.Vector2()
+        self.last_direction = self.direction
         self.speed = 300
         self.gravity = 50
         self.jump_velocity = 20
@@ -33,12 +40,32 @@ class Player(pygame.sprite.Sprite):
                     if self.direction.x < 0: self.rect.left = sprite.rect.right
 
                 if direction == 'vertical':
-                    if self.direction.y < 0: self.rect.top = sprite.rect.bottom
+                    if self.direction.y < 0: 
+                        self.rect.top = sprite.rect.bottom
+                        self.direction.y = 0 # so the player doesn't float in the air when hitting an object from bellow
+
                     if self.direction.y > 0: 
                         self.rect.bottom = sprite.rect.top
                         self.direction.y = 0 # so the direction doesn't increase to infinity
                         self.can_jump = True 
 
+    def animate(self, dt):
+        if self.direction.x > 0:
+            self.is_facing_left = False
+        if self.direction.x < 0:
+            self.is_facing_left = True
+
+        if self.direction.y:
+            self.image = self.frames[self.jump_frame_index]
+            self.frame_index = self.jump_frame_index + 1
+        elif self.direction.x == 0:
+            self.frame_index = 0
+            self.image = self.frames[self.frame_index]
+        else:
+            self.frame_index += self.animation_speed * dt
+            self.image = self.frames[int(self.frame_index) % len(self.frames)]
+
+        self.image = pygame.transform.flip(self.image, self.is_facing_left, False)
 
     def move(self, dt):
         # horizontal
@@ -65,5 +92,8 @@ class Player(pygame.sprite.Sprite):
             self.frames = [pygame.image.load(join(root, file)) for file in files]
 
     def update(self, dt):
+        self.last_direction = self.direction
+
         self.get_direction()
         self.move(dt)
+        self.animate(dt)
