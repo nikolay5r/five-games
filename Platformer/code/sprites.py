@@ -9,9 +9,10 @@ class Sprite(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, groups, collision_sprites):
         super().__init__(groups)
+        print(pos)
         self.setup_frames()
         self.image = self.frames[0]
-        self.rect = self.image.get_frect(center = (WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
+        self.rect = self.image.get_frect(center = pos)
 
         #collisions
         self.collision_sprites = collision_sprites
@@ -23,8 +24,6 @@ class Player(pygame.sprite.Sprite):
 
     def collision(self, direction):
         for sprite in self.collision_sprites:
-            if sprite == self: continue
-
             if sprite.rect.colliderect(self.rect):
                 if direction == 'horizontal':
                     if self.direction.x > 0: self.rect.right = sprite.rect.left
