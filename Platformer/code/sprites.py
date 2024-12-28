@@ -19,8 +19,7 @@ class AnimatedSprite(Sprite):
 
 class Player(AnimatedSprite):
     def __init__(self, pos, frames, groups, collision_sprites):
-        self.setup_frames()
-        super().__init__(pos, self.frames, groups)
+        super().__init__(pos, frames, groups)
 
         # animation
         self.jump_frame_index = 1
@@ -91,10 +90,6 @@ class Player(AnimatedSprite):
         if self.can_jump and (keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_SPACE]):
             self.direction.y = -self.jump_velocity  
             self.can_jump = False 
-
-    def setup_frames(self):
-        for root, _, files in walk(join("images", "player")):
-            self.frames = [pygame.image.load(join(root, file)) for file in files]
 
     def update(self, dt):
         self.last_direction = self.direction
