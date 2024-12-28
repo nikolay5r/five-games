@@ -9,18 +9,21 @@ class Sprite(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, groups, collision_sprites):
         super().__init__(groups)
-        print(pos)
         self.setup_frames()
-        self.image = self.frames[0]
+
+        self.image = self.frames[self.frame_index]        
         self.rect = self.image.get_frect(center = pos)
 
-        #collisions
+        # collisions
         self.collision_sprites = collision_sprites
 
-        #movement
+        # movement
         self.direction = pygame.math.Vector2()
-        self.speed = 200
-        self.jump_velocity = 100
+        self.speed = 300
+        self.gravity = 50
+        self.jump_velocity = 20
+        self.can_jump = True
+
 
     def collision(self, direction):
         for sprite in self.collision_sprites:
@@ -30,23 +33,31 @@ class Player(pygame.sprite.Sprite):
                     if self.direction.x < 0: self.rect.left = sprite.rect.right
 
                 if direction == 'vertical':
-                    if self.direction.y > 0: self.rect.bottom = sprite.rect.top
                     if self.direction.y < 0: self.rect.top = sprite.rect.bottom
+                    if self.direction.y > 0: 
+                        self.rect.bottom = sprite.rect.top
+                        self.direction.y = 0 # so the direction doesn't increase to infinity
+                        self.can_jump = True 
+
 
     def move(self, dt):
+        # horizontal
         self.rect.centerx += self.direction.x * self.speed * dt
         self.collision("horizontal")
-        self.rect.centery += self.direction.y * self.jump_velocity * dt
+
+        # vertical
+        self.direction.y += self.gravity * dt # apply gravity
+        self.rect.centery += self.direction.y
         self.collision("vertical")
 
     def get_direction(self):
         keys = pygame.key.get_pressed()
         
         self.direction.x = int(keys[pygame.K_d] or keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT] or keys[pygame.K_a])
-        self.direction.y = int(keys[pygame.K_DOWN])- int(keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_SPACE])
 
-        if self.direction:
-            self.direction = self.direction.normalize()
+        # jump input
+        if keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_SPACE]:
+            self.direction.y = -self.jump_velocity   
 
     def setup_frames(self):
         for root, _, files in walk(join("images", "player")):

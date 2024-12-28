@@ -4,7 +4,7 @@ from groups import AllSprites
 
 class Game:
     def __init__(self):
-        #init
+        # init
         pygame.init()
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption('Platformer')
