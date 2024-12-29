@@ -1,4 +1,6 @@
 from settings import *
+from events import *
+
 from timers import Timer
 
 class Sprite(pygame.sprite.Sprite):
@@ -56,7 +58,7 @@ class Player(AnimatedSprite):
         self.can_jump = True
 
         # shooting
-        self.shoot_timer = Timer(500)
+        self.shoot_timer = Timer(500, event=CREATE_BULLET)
 
     def collision(self, direction):
         for sprite in self.collision_sprites:
@@ -111,7 +113,6 @@ class Player(AnimatedSprite):
             self.can_jump = False 
 
         if not self.shoot_timer and (keys[pygame.K_RETURN] or mouse_keys[0]):
-            print("shoot")
             self.shoot_timer.activate()
 
     def update(self, dt):
