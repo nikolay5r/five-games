@@ -56,11 +56,13 @@ class Game:
         Bee(pos, self.bee_frames, self.all_sprites)
 
     def create_bullet(self):
-        player_pos = pygame.Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
-        mouse_pos = pygame.mouse.get_pos()
-        direction = pygame.Vector2(mouse_pos - player_pos).normalize()
+        direction = -1 if self.player.is_facing_left else 1
+        offset_x = self.player_frames[0].get_size()[0] / 2 + 10
+        offset_y = 10
+        pos = pygame.Vector2(self.player.rect.centerx + direction * offset_x, self.player.rect.centery + offset_y)
+        
 
-        Bullet(self.player.rect.center, direction, self.bullet_surf, (self.all_sprites, self.bullet_sprites))
+        Bullet(pos, direction, self.bullet_surf, (self.all_sprites, self.bullet_sprites))
 
     def run(self):
         while self.running:
