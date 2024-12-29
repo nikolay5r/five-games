@@ -2,7 +2,7 @@ import events
 import timers
 
 from random import randint
-from sprites import Sprite, Player, Bullet, Bee
+from sprites import Sprite, Player, Bullet, Bee, Fire
 from groups import AllSprites
 from support import *
 from settings import * 
@@ -61,7 +61,7 @@ class Game:
         offset_y = 10
         pos = pygame.Vector2(self.player.rect.centerx + direction * offset_x, self.player.rect.centery + offset_y)
         
-
+        Fire(pos, direction, self.fire_surf, (self.all_sprites))
         Bullet(pos, direction, self.bullet_surf, (self.all_sprites, self.bullet_sprites))
 
     def run(self):
