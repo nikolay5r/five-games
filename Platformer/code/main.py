@@ -1,6 +1,8 @@
 import events
+import timers
 
-from sprites import Sprite, Player, Bullet
+from random import randint
+from sprites import Sprite, Player, Bullet, Bee
 from groups import AllSprites
 from support import *
 from settings import * 
@@ -22,6 +24,9 @@ class Game:
         self.import_assets()
         self.setup_map()
 
+        self.create_bee_timer = timers.FunctionTimer(1500, self.create_bee, repeat=True, auto_start=True)
+        print(self.create_bee_timer.active)
+
     def import_assets(self):
         # import surfaces and frames
         self.player_frames = import_folder("images", "player")
@@ -34,17 +39,21 @@ class Game:
         self.audio = import_audio("audio")
 
     def setup_map(self):
-        tmx_map = load_pygame(join("data", "maps", "world.tmx"))
+        self.tile_map = load_pygame(join("data", "maps", "world.tmx"))
         
-        for x, y, image in tmx_map.get_layer_by_name("Main").tiles():
+        for x, y, image in self.tile_map.get_layer_by_name("Main").tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites, self.collision_sprites))
 
-        for x, y, image in tmx_map.get_layer_by_name("Decoration").tiles():
+        for x, y, image in self.tile_map.get_layer_by_name("Decoration").tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), image, (self.all_sprites))
 
-        for obj in tmx_map.get_layer_by_name("Entities"):
+        for obj in self.tile_map.get_layer_by_name("Entities"):
             if obj.name == "Player":
                 self.player = Player((obj.x, obj.y), self.player_frames, self.all_sprites, self.collision_sprites)
+
+    def create_bee(self):
+        pos = pygame.Vector2(randint(0, self.tile_map.width * TILE_SIZE), randint(0, self.tile_map.height * TILE_SIZE))
+        Bee(pos, self.bee_frames, self.all_sprites)
 
     def create_bullet(self):
         player_pos = pygame.Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
@@ -65,6 +74,7 @@ class Game:
 
             # update
             self.all_sprites.update(dt)
+            self.create_bee_timer.update()
 
             # draw 
             self.display_surface.fill(BG_COLOR)
