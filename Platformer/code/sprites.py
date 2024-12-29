@@ -38,17 +38,17 @@ class Worm(AnimatedSprite):
 class Bullet(Sprite):
     def __init__(self, pos, direction, surf, groups):
         super().__init__(pos, surf, groups)
-        self.destroy_timer = timers.FunctionTimer(5000, self.kill)
-        self.destroy_timer.activate()
         self.direction = direction
         self.speed = 600
         
+        # destroy timer
+        self.destroy_timer = timers.FunctionTimer(5000, self.kill, auto_start=True)
+        
         # rotate the bullet in the right direction
-        angle = math.degrees(math.atan2(self.direction.x, self.direction.y)) - 90
-        self.image = pygame.transform.rotozoom(self.image, angle, 1)
+        self.image = pygame.transform.flip(self.image, direction == -1, False)
 
     def update(self, dt):
-        self.rect.center += self.speed * self.direction * dt
+        self.rect.centerx += self.speed * self.direction * dt
 
 
 class Player(AnimatedSprite):
