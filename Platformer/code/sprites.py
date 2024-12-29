@@ -1,7 +1,7 @@
-from settings import *
-from events import *
+import events
 
 from timers import Timer
+from settings import *
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
@@ -58,7 +58,7 @@ class Player(AnimatedSprite):
         self.can_jump = True
 
         # shooting
-        self.shoot_timer = Timer(500, event=CREATE_BULLET)
+        self.shoot_timer = Timer(500, event_type = events.CREATE_BULLET)
 
     def collision(self, direction):
         for sprite in self.collision_sprites:

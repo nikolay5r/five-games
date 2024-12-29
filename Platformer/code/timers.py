@@ -1,9 +1,9 @@
 from settings import *
 
 class Timer:
-    def __init__(self, duration, event: pygame.Event = None, repeat = False, auto_start = False):
+    def __init__(self, duration, event_type: int = None, repeat = False, auto_start = False):
         self.duration = duration
-        self.event = event
+        self.event_type = event_type
         self.repeat = repeat
         self.active = False
         self.start_time = 0
@@ -27,6 +27,6 @@ class Timer:
     def update(self):
         curr_time = pygame.time.get_ticks()
         if self.active and curr_time - self.start_time >= self.duration:
-            if self.event:
-                pygame.event.post(self.event)
+            if self.event_type:
+                pygame.event.post(pygame.Event(self.event_type))
             self.deactivate()
