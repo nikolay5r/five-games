@@ -1,8 +1,9 @@
-from settings import * 
-from support import *
+import events
 
-from sprites import Sprite, Player
+from sprites import Sprite, Player, Bullet
 from groups import AllSprites
+from support import *
+from settings import * 
 
 class Game:
     def __init__(self):
@@ -16,6 +17,7 @@ class Game:
         # groups 
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
+        self.bullet_sprites = pygame.sprite.Group()
         
         self.import_assets()
         self.setup_map()
@@ -44,6 +46,13 @@ class Game:
             if obj.name == "Player":
                 self.player = Player((obj.x, obj.y), self.player_frames, self.all_sprites, self.collision_sprites)
 
+    def create_bullet(self):
+        player_pos = pygame.Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
+        mouse_pos = pygame.mouse.get_pos()
+        direction = pygame.Vector2(mouse_pos - player_pos).normalize()
+
+        Bullet(self.player.rect.center, direction, self.bullet_surf, (self.all_sprites, self.bullet_sprites))
+
     def run(self):
         while self.running:
             dt = self.clock.tick(FRAMERATE) / 1000 
@@ -51,7 +60,9 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False 
-            
+                if event.type == events.CREATE_BULLET:
+                    self.create_bullet()
+
             # update
             self.all_sprites.update(dt)
 
