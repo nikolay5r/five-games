@@ -48,6 +48,7 @@ class Bullet(Sprite):
         self.image = pygame.transform.flip(self.image, direction == -1, False)
 
     def update(self, dt):
+        self.destroy_timer.update()
         self.rect.centerx += self.speed * self.direction * dt
 
 class Fire(Sprite):
@@ -55,6 +56,9 @@ class Fire(Sprite):
         super().__init__(pos, surf, groups)
         self.image = pygame.transform.flip(self.image, direction == -1, False)
         self.destroy_timer = timers.FunctionTimer(100, self.kill, auto_start=True)
+    
+    def update(self, *args):
+        self.destroy_timer.update()
 
 class Player(AnimatedSprite):
     def __init__(self, pos, frames, groups, collision_sprites):
