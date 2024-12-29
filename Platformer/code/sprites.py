@@ -1,6 +1,7 @@
 import events
+import timers
+import math
 
-from timers import Timer
 from settings import *
 
 class Sprite(pygame.sprite.Sprite):
@@ -34,6 +35,21 @@ class Worm(AnimatedSprite):
     def update(self, dt):
         self.animate(dt)
 
+class Bullet(Sprite):
+    def __init__(self, pos, direction, surf, groups):
+        super().__init__(pos, surf, groups)
+        self.destroy_timer = timers.FunctionTimer(5000, self.kill)
+        self.destroy_timer.activate()
+        self.direction = direction
+        self.speed = 600
+        
+        # rotate the bullet in the right direction
+        angle = math.degrees(math.atan2(self.direction.x, self.direction.y)) - 90
+        self.image = pygame.transform.rotozoom(self.image, angle, 1)
+
+    def update(self, dt):
+        self.rect.center += self.speed * self.direction * dt
+
 
 class Player(AnimatedSprite):
     def __init__(self, pos, frames, groups, collision_sprites):
@@ -58,7 +74,7 @@ class Player(AnimatedSprite):
         self.can_jump = True
 
         # shooting
-        self.shoot_timer = Timer(500, event_type = events.CREATE_BULLET)
+        self.shoot_timer = timers.EventTimer(500, events.CREATE_BULLET)
 
     def collision(self, direction):
         for sprite in self.collision_sprites:
